@@ -24,6 +24,7 @@ import java.util.Map;
  * @author Roy van Rijn
  *
  */
+
 /**
  *
  * @author tisseurDeToile
@@ -34,10 +35,16 @@ public class FileLister {
         (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7',
         (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c',
         (byte) 'd', (byte) 'e', (byte) 'f'};
+
     final Map<Integer, String> encodedNames;
     final Map<Integer, FileInfo> fileInfoList;
     final File backupPath;
 
+    /**
+     * contructeur initialise la lecture du repertoire de backup
+     * @param backupPath chemin du repertoire
+     * @throws Exception
+     */
     public FileLister(File backupPath) throws Exception {
         this.backupPath = backupPath;
 
@@ -51,8 +58,13 @@ public class FileLister {
 
     }
 
+    /**
+     * retourne la liste des fichier contenue dans le backup
+     * @return List liste des noms de fichier
+     */
     public List getFilesNames() {
         List<String> list = new ArrayList<String>();
+
 
         for (Integer foffset : fileInfoList.keySet()) {
             list.add(fileInfoList.get(foffset).getFilename());
@@ -98,7 +110,7 @@ public class FileLister {
     }
     int offset;
 
-    private  Map<Integer, FileInfo> processMbdbFile(File mbdb) throws Exception {
+    private Map<Integer, FileInfo> processMbdbFile(File mbdb) throws Exception {
         BufferedInputStream stream = new BufferedInputStream(new FileInputStream(mbdb));
         byte[] checkFile = new byte[4];
         stream.read(checkFile, 0, 4);
@@ -171,11 +183,17 @@ public class FileLister {
         return this.new FileIterator();
     }
 
+    public File getCurrentFile(int offset) {
+        File curFile = new File(backupPath, encodedNames.get(offset));
+
+        return curFile;
+    }
+
     /**
      * This class implement an Iterator on the file list.
      * In the backup Directory.
      */
-    public class FileIterator implements Iterator<String> {
+    public class FileIterator implements Iterator<OffsetFilename> {
 
         private Integer currOffset;
         private Iterator<Integer> offsetIterator;
@@ -188,20 +206,42 @@ public class FileLister {
             return this.offsetIterator.hasNext();
         }
 
-        public String next() {
+        public OffsetFilename next() {
             this.currOffset = this.offsetIterator.next();
-            String fileName = fileInfoList.get(this.currOffset).getFilename();
-            return fileName;
+            OffsetFilename returnVal = new OffsetFilename(this.currOffset, fileInfoList.get(this.currOffset).getFilename());
+
+            return returnVal;
         }
 
         public void remove() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+    }
 
-        public File getCurrentFile() {
-            File curFile = new File(backupPath, encodedNames.get(this.currOffset));
-            
-            return curFile;
+    public class OffsetFilename {
+
+        private int offset;
+        private String filename;
+
+        public String getString() {
+            return this.filename;
+        }
+
+        public int getOffset() {
+            return this.offset;
+        }
+
+        private void setOffset(int value) {
+            this.offset = value;
+        }
+
+        private void setFilename(String value) {
+            this.filename = value;
+        }
+
+        public OffsetFilename(int offset, String filename) {
+            this.setFilename(filename);
+            this.setOffset(offset);
         }
     }
 }
