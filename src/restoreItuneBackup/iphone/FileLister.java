@@ -24,6 +24,7 @@ import java.util.Map;
  * @author Roy van Rijn
  *
  */
+
 /**
  *
  * @author tisseurDeToile
@@ -34,10 +35,16 @@ public class FileLister {
         (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7',
         (byte) '8', (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c',
         (byte) 'd', (byte) 'e', (byte) 'f'};
+
     final Map<Integer, String> encodedNames;
     final Map<Integer, FileInfo> fileInfoList;
     final File backupPath;
 
+    /**
+     * contructeur initialise la lecture du repertoire de backup
+     * @param backupPath chemin du repertoire
+     * @throws Exception
+     */
     public FileLister(File backupPath) throws Exception {
         this.backupPath = backupPath;
 
@@ -51,8 +58,13 @@ public class FileLister {
 
     }
 
+    /**
+     * retourne la liste des fichier contenue dans le backup
+     * @return List liste des noms de fichier
+     */
     public List getFilesNames() {
         List<String> list = new ArrayList<String>();
+
 
         for (Integer foffset : fileInfoList.keySet()) {
             list.add(fileInfoList.get(foffset).getFilename());

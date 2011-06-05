@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- *
+ * FileNameFilter pour les backups Itunes
  * @author tisseurDeToile
  */
 public class ItuneBackFNF implements FilenameFilter {
