@@ -98,7 +98,7 @@ public class FileLister {
     }
     int offset;
 
-    private  Map<Integer, FileInfo> processMbdbFile(File mbdb) throws Exception {
+    private Map<Integer, FileInfo> processMbdbFile(File mbdb) throws Exception {
         BufferedInputStream stream = new BufferedInputStream(new FileInputStream(mbdb));
         byte[] checkFile = new byte[4];
         stream.read(checkFile, 0, 4);
@@ -171,11 +171,17 @@ public class FileLister {
         return this.new FileIterator();
     }
 
+    public File getCurrentFile(int offset) {
+        File curFile = new File(backupPath, encodedNames.get(offset));
+
+        return curFile;
+    }
+
     /**
      * This class implement an Iterator on the file list.
      * In the backup Directory.
      */
-    public class FileIterator implements Iterator<String> {
+    public class FileIterator implements Iterator<OffsetFilename> {
 
         private Integer currOffset;
         private Iterator<Integer> offsetIterator;
@@ -188,20 +194,42 @@ public class FileLister {
             return this.offsetIterator.hasNext();
         }
 
-        public String next() {
+        public OffsetFilename next() {
             this.currOffset = this.offsetIterator.next();
-            String fileName = fileInfoList.get(this.currOffset).getFilename();
-            return fileName;
+            OffsetFilename returnVal = new OffsetFilename(this.currOffset, fileInfoList.get(this.currOffset).getFilename());
+
+            return returnVal;
         }
 
         public void remove() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+    }
 
-        public File getCurrentFile() {
-            File curFile = new File(backupPath, encodedNames.get(this.currOffset));
-            
-            return curFile;
+    public class OffsetFilename {
+
+        private int offset;
+        private String filename;
+
+        public String getString() {
+            return this.filename;
+        }
+
+        public int getOffset() {
+            return this.offset;
+        }
+
+        private void setOffset(int value) {
+            this.offset = value;
+        }
+
+        private void setFilename(String value) {
+            this.filename = value;
+        }
+
+        public OffsetFilename(int offset, String filename) {
+            this.setFilename(filename);
+            this.setOffset(offset);
         }
     }
 }
