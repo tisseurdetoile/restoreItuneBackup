@@ -29,6 +29,7 @@ import restoreItuneBackup.iphone.ItuneBackFNF;
 public class Main {
 
     private boolean isError = false;
+    private boolean isExit = false;
     private boolean onlyList = true;
     private long nbfile = 0;
     public BooleanOption viewHelp = new BooleanOption("-h");
@@ -55,6 +56,14 @@ public class Main {
         System.out.println("showVersion");
     }
 
+    private void showError() {
+        System.out.println ("une erreur est survenue");
+
+    }
+
+    private void showErrorParamRepBack() {
+        System.out.println ("le repertoire de destination n'est pas définie --itunebackdir");
+    }
     /**
      * 
      * @param args
@@ -75,7 +84,6 @@ public class Main {
             }
 
             if (str.value == null || str.value.isEmpty()) {
-                System.out.println("Le repertoire n'est pas defini");
                 return ERR_PARAM_REPBACK;
             }
 
@@ -111,12 +119,27 @@ public class Main {
         switch (result) {
             case PARAM_SHOW_HELP:
                 showHelp();
+                isExit = true;
                 break;
 
             case PARAM_SHOW_VERSION:
                 showVersion();
+                isExit = true;
                 break;
+
+            case ERR_PARAM:
+                showError();
+                isExit = true;
+
+            case ERR_PARAM_REPBACK:
+                showErrorParamRepBack();
+                isExit = true;
         }
+
+        if (isExit) {
+             System.exit(10);
+        }
+
 
         FileLister.OffsetFilename readFileInfo;
 
